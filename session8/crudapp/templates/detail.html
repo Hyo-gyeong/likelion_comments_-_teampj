@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load staticfiles %}
+<div class=container>
+<div class=posts>
+    <span class=post-title>{{post.title}}</span>    <br>
+    <span class=post-body>{{post.body}}</span>  <br>
+    <a class = edit href = "{% url 'edit' post.id %}">수정</a>
+    <a class = delete href = "{% url 'delete' post.id %}">삭제</a>
+</div>
+    <div class =comments>
+        <span class= comment>&#10002; 댓글:</span><br><br>
+        {% for comment in post.comments.all %}
+            <p><img src="{% static 'user_icon.png' %}" id="img1" width="20px" height="20px"> {{ comment.contents }}
+            <a href="{% url 'comment_delete' post.id comment.id %}" class="delete">삭제</a></p>
+            {% for commentReply in comment.replys.all %}
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <img src="{% static 'recomment_icon.png' %}" id="img1" width="20px" height="15px"> {{ commentReply.contents }}
+            <a href="{% url 'comment_reply_delete' post.id comment.id commentReply.id %}" class="delete">삭제</a><br>
+            {% endfor %}
+            <br>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span class="comment">&#128395; 대댓글 쓰기:</span><br>
+            <form action="{% url 'comment_reply' post.id comment.id %}" method="POST">
+                {% csrf_token %}
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="text" name="contents">
+                <button type="submit" class="btn">댓글 쓰기</button>
+            </form>  
+        {% endfor %}
+    </div>
+    <span class= comment>&#10002; 댓글 쓰기:</span><br>
+    <form action="{% url 'comment_create' post.id %}" method="POST">
+        {% csrf_token %}
+        <input type="text" name="contents">
+        <button type="submit" class="btn">댓글 쓰기</button>
+    </form>
+</div>   
+
+{% endblock %}
